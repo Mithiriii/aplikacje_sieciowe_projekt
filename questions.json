@@ -1,0 +1,30 @@
+{
+  "questions": [
+    {
+      "question": "Co jest stolicą Francji?",
+      "options": ["Paryż", "Londyn", "Berlin", "Madryt"],
+      "answer": "Paryż"
+    },
+    {
+      "question": "Ile wynosi suma kątów w trójkącie?",
+      "options": ["180 stopni", "90 stopni", "360 stopni", "270 stopni"],
+      "answer": "180 stopni"
+    },
+    {
+      "question": "Który pierwiastek chemiczny ma symbol 'O'?",
+      "options": ["Złoto", "Krzem", "Tlen", "Wodór"],
+      "answer": "Tlen"
+    },
+    {
+      "question": "Kto napisał 'Hamleta'?",
+      "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Leo Tolstoy"],
+      "answer": "William Shakespeare"
+    },
+    {
+      "question": "Jaka jest najwyższa góra świata?",
+      "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],
+      "answer": "Mount Everest"
+    }
+  ]
+}
+  
