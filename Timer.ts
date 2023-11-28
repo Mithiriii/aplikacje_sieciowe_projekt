@@ -3,7 +3,7 @@ export class Timer {
     public elapsedTime: number = 0;
     private timerInterval: number | null = null;
   
-    start() {
+     public start() {
       this.startTime = new Date();
       this.timerInterval = window.setInterval(() => this.tick(), 1000);
     }

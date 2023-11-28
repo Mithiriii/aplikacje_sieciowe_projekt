@@ -1,30 +1,53 @@
 import { Quiz } from "./Quiz";
 import { Question } from "./Question";
+import { Timer } from "./Timer";
 
 export class Renderer {
   private quizContainer: HTMLElement;
+  private introductionContainer: HTMLElement;
 
   constructor() {
     this.quizContainer = document.getElementById('app')!;
+    this.introductionContainer = document.getElementById('introduction')!;
+  }
+
+  public renderIntroduction(quiz :Quiz){
+    this.introductionContainer.innerHTML=`Przed tobą test wiedzy ogólnej składający sie z ${quiz.getQuestionCount()} pytań. 
+   <br> <button id="startTest">Zaczynajmy</button>`
+    this.setupStartTestListener(quiz);
+  }
+
+  setupStartTestListener(quiz:Quiz){  
+    const startTestButton = this.introductionContainer.querySelector('#startTest') as HTMLButtonElement;
+    startTestButton.onclick= ()=>{
+      this.renderQuiz(quiz);
+    
+    }
+
   }
 
   public renderQuiz(quiz: Quiz): void {
+    this.introductionContainer.innerHTML=``;
     const currentQuestion = quiz.getCurrentQuestion();
-    this.quizContainer.innerHTML = `
+    this.quizContainer.innerHTML = ` <h2>Pytanie ${quiz.getNumberOfQuestion()+1} z ${quiz.getQuestionCount()}</h2>
       <div class="question">
-        <h2>Question: ${currentQuestion.getText()}</h2>
+        <h3>Question: ${currentQuestion.getText()}</h3>
         ${this.renderOptions(currentQuestion)}
       </div>
       <button id="previous">Previous</button>
       <button id="next">Next</button>
       <button id="submit" ${quiz.hasFinished() ? '' : 'disabled'}>Submit</button>
+      
     `;
+    
 
-    this.setupOptionListeners(quiz);
-    this.setupNavigationListeners(quiz);
-    this.quizContainer.insertAdjacentHTML('beforeend', '<div id="timer"></div>');
+       this.setupOptionListeners(quiz);
+       this.setupNavigationListeners(quiz);
+   
+     this.quizContainer.insertAdjacentHTML('beforeend', '<div id="timer"></div>');
     quiz.startQuiz();
   }
+ 
 
   private renderOptions(question: Question): string {
     return question.getOptions().map((option, index) => `
@@ -50,6 +73,7 @@ export class Renderer {
     const previousButton = this.quizContainer.querySelector('#previous') as HTMLButtonElement;
     const nextButton = this.quizContainer.querySelector('#next') as HTMLButtonElement;
     const submitButton = this.quizContainer.querySelector('#submit') as HTMLButtonElement;
+    
 
     previousButton.onclick = () => {
       quiz.previousQuestion();

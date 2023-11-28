@@ -6,7 +6,7 @@ export class Statistics {
   
     startQuestionTimer(index: number) {
       this.ensureTimer(index);
-      this.questionTimers[index].start();
+      //this.questionTimers[index].start();
     }
   
     stopQuestionTimer(index: number) {

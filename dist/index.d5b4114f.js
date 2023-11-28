@@ -585,41 +585,14 @@ class App {
     }
     async loadQuiz() {
         try {
-            const jsonString = `{
-          "questions": [
-            {
-              "question": "Co jest stolic\u{105} Francji?",
-              "options": ["Pary\u{17C}", "Londyn", "Berlin", "Madryt"],
-              "answer": "Pary\u{17C}"
-            },
-            {
-              "question": "Ile wynosi suma k\u{105}t\xf3w w tr\xf3jk\u{105}cie?",
-              "options": ["180 stopni", "90 stopni", "360 stopni", "270 stopni"],
-              "answer": "180 stopni"
-            },
-            {
-              "question": "Kt\xf3ry pierwiastek chemiczny ma symbol 'O'?",
-              "options": ["Z\u{142}oto", "Krzem", "Tlen", "Wod\xf3r"],
-              "answer": "Tlen"
-            },
-            {
-              "question": "Kto napisa\u{142} 'Hamleta'?",
-              "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Leo Tolstoy"],
-              "answer": "William Shakespeare"
-            },
-            {
-              "question": "Jaka jest najwy\u{17C}sza g\xf3ra \u{15B}wiata?",
-              "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],
-              "answer": "Mount Everest"
-            }
-          ]
-        }`;
             console.log("Jestem tu 0");
-            const questions = JSON.parse(jsonString);
+            var fs = require("50e99a728697c1d9");
+            const questions = JSON.parse('{\n  "questions": [\n    {\n      "question": "Co jest stolic\u0105 Francji?",\n      "options": ["Pary\u017C", "Londyn", "Berlin", "Madryt"],\n      "answer": "Pary\u017C"\n    },\n    {\n      "question": "Ile wynosi suma k\u0105t\xf3w w tr\xf3jk\u0105cie?",\n      "options": ["180 stopni", "90 stopni", "360 stopni", "270 stopni"],\n      "answer": "180 stopni"\n    },\n    {\n      "question": "Kt\xf3ry pierwiastek chemiczny ma symbol \'O\'?",\n      "options": ["Z\u0142oto", "Krzem", "Tlen", "Wod\xf3r"],\n      "answer": "Tlen"\n    },\n    {\n      "question": "Kto napisa\u0142 \'Hamleta\'?",\n      "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Leo Tolstoy"],\n      "answer": "William Shakespeare"\n    },\n    {\n      "question": "Jaka jest najwy\u017Csza g\xf3ra \u015Bwiata?",\n      "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],\n      "answer": "Mount Everest"\n    }\n  ]\n}\n  '); // wczytanie pytań z json
             console.log("Jestem tu");
             this.quiz.setQuestions(questions.questions); // Uwaga na to, jak odnosimy się do pytań
             console.log("Jestem tu2");
-            this.renderer.renderQuiz(this.quiz);
+            this.renderer.renderIntroduction(this.quiz);
+            //this.renderer.renderQuiz(this.quiz);
             console.log("Jestem tu3");
             this.quiz.startQuiz(); // Wywołaj startQuiz() po wczytaniu pytań
             console.log("Jestem tu4");
@@ -630,7 +603,7 @@ class App {
 }
 new App();
 
-},{"./Quiz":"ekbkv","./Renderer":"48D02"}],"ekbkv":[function(require,module,exports) {
+},{"./Quiz":"ekbkv","./Renderer":"48D02","50e99a728697c1d9":"jhUEF"}],"ekbkv":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Quiz", ()=>Quiz);
@@ -678,6 +651,12 @@ class Quiz {
     }
     getScore() {
         return this.score;
+    }
+    getTimer() {
+        return this.timer;
+    }
+    getNumberOfQuestion() {
+        return this.currentQuestionIndex;
     }
     getQuestionCount() {
         return this.questions.length;
@@ -799,7 +778,7 @@ var _timer = require("./Timer");
 class Statistics {
     startQuestionTimer(index) {
         this.ensureTimer(index);
-        this.questionTimers[index].start();
+    //this.questionTimers[index].start();
     }
     stopQuestionTimer(index) {
         if (this.questionTimers[index]) this.questionTimers[index].stop();
@@ -853,17 +832,31 @@ parcelHelpers.export(exports, "Renderer", ()=>Renderer);
 class Renderer {
     constructor(){
         this.quizContainer = document.getElementById("app");
+        this.introductionContainer = document.getElementById("introduction");
+    }
+    renderIntroduction(quiz) {
+        this.introductionContainer.innerHTML = `Przed tob\u{105} test wiedzy og\xf3lnej sk\u{142}adaj\u{105}cy sie z ${quiz.getQuestionCount()} pyta\u{144}. 
+   <br> <button id="startTest">Zaczynajmy</button>`;
+        this.setupStartTestListener(quiz);
+    }
+    setupStartTestListener(quiz) {
+        const startTestButton = this.introductionContainer.querySelector("#startTest");
+        startTestButton.onclick = ()=>{
+            this.renderQuiz(quiz);
+        };
     }
     renderQuiz(quiz) {
+        this.introductionContainer.innerHTML = ``;
         const currentQuestion = quiz.getCurrentQuestion();
-        this.quizContainer.innerHTML = `
+        this.quizContainer.innerHTML = ` <h2>Pytanie ${quiz.getNumberOfQuestion() + 1} z ${quiz.getQuestionCount()}</h2>
       <div class="question">
-        <h2>Question: ${currentQuestion.getText()}</h2>
+        <h3>Question: ${currentQuestion.getText()}</h3>
         ${this.renderOptions(currentQuestion)}
       </div>
       <button id="previous">Previous</button>
       <button id="next">Next</button>
       <button id="submit" ${quiz.hasFinished() ? "" : "disabled"}>Submit</button>
+      
     `;
         this.setupOptionListeners(quiz);
         this.setupNavigationListeners(quiz);
@@ -920,6 +913,9 @@ class Renderer {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["7ARAp","2iQTb"], "2iQTb", "parcelRequiref6ea")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jhUEF":[function(require,module,exports) {
+"use strict";
+
+},{}]},["7ARAp","2iQTb"], "2iQTb", "parcelRequiref6ea")
 
 //# sourceMappingURL=index.d5b4114f.js.map

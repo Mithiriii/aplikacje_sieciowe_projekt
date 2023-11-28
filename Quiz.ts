@@ -31,6 +31,7 @@ export class Quiz {
     public nextQuestion(): void {
       if (this.currentQuestionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
+        
       }
     }
   
@@ -57,6 +58,13 @@ export class Quiz {
     public getScore(): number {
       return this.score;
     }
+    public getTimer(): Timer {
+      return this.timer
+    }
+    public getNumberOfQuestion(): number {
+      return this.currentQuestionIndex
+    }
+
   
     public getQuestionCount(): number {
       return this.questions.length;
