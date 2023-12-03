@@ -23,7 +23,11 @@ export class Quiz {
         [this.questions[i], this.questions[j]] = [this.questions[j], this.questions[i]];
       }
     }
-  
+    
+    public dawajToPytanie(widziszMnie: number): Question{
+      return this.questions[widziszMnie];
+    }
+
     public getCurrentQuestion(): Question {
       return this.questions[this.currentQuestionIndex];
     }

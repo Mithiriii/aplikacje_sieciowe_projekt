@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"7ARAp":[function(require,module,exports) {
+})({"53Ztx":[function(require,module,exports) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
@@ -587,7 +587,7 @@ class App {
         try {
             console.log("Jestem tu 0");
             var fs = require("50e99a728697c1d9");
-            const questions = JSON.parse('{\n  "questions": [\n    {\n      "question": "Co jest stolic\u0105 Francji?",\n      "options": ["Pary\u017C", "Londyn", "Berlin", "Madryt"],\n      "answer": "Pary\u017C"\n    },\n    {\n      "question": "Ile wynosi suma k\u0105t\xf3w w tr\xf3jk\u0105cie?",\n      "options": ["180 stopni", "90 stopni", "360 stopni", "270 stopni"],\n      "answer": "180 stopni"\n    },\n    {\n      "question": "Kt\xf3ry pierwiastek chemiczny ma symbol \'O\'?",\n      "options": ["Z\u0142oto", "Krzem", "Tlen", "Wod\xf3r"],\n      "answer": "Tlen"\n    },\n    {\n      "question": "Kto napisa\u0142 \'Hamleta\'?",\n      "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Leo Tolstoy"],\n      "answer": "William Shakespeare"\n    },\n    {\n      "question": "Jaka jest najwy\u017Csza g\xf3ra \u015Bwiata?",\n      "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],\n      "answer": "Mount Everest"\n    }\n  ]\n}\n  '); // wczytanie pytań z json
+            const questions = JSON.parse('{\r\n  "questions": [\r\n    {\r\n      "question": "Co jest stolic\u0105 Francji?",\r\n      "options": ["Pary\u017C", "Londyn", "Berlin", "Madryt"],\r\n      "answer": "Pary\u017C"\r\n    },\r\n    {\r\n      "question": "Ile wynosi suma k\u0105t\xf3w w tr\xf3jk\u0105cie?",\r\n      "options": ["180 stopni", "90 stopni", "360 stopni", "270 stopni"],\r\n      "answer": "180 stopni"\r\n    },\r\n    {\r\n      "question": "Kt\xf3ry pierwiastek chemiczny ma symbol \'O\'?",\r\n      "options": ["Z\u0142oto", "Krzem", "Tlen", "Wod\xf3r"],\r\n      "answer": "Tlen"\r\n    },\r\n    {\r\n      "question": "Kto napisa\u0142 \'Hamleta\'?",\r\n      "options": ["William Shakespeare", "Charles Dickens", "Jane Austen", "Leo Tolstoy"],\r\n      "answer": "William Shakespeare"\r\n    },\r\n    {\r\n      "question": "Jaka jest najwy\u017Csza g\xf3ra \u015Bwiata?",\r\n      "options": ["Mount Everest", "K2", "Kangchenjunga", "Lhotse"],\r\n      "answer": "Mount Everest"\r\n    }\r\n  ]\r\n}\r\n  '); // wczytanie pytań z json
             console.log("Jestem tu");
             this.quiz.setQuestions(questions.questions); // Uwaga na to, jak odnosimy się do pytań
             console.log("Jestem tu2");
@@ -628,6 +628,9 @@ class Quiz {
                 this.questions[i]
             ];
         }
+    }
+    dawajToPytanie(widziszMnie) {
+        return this.questions[widziszMnie];
     }
     getCurrentQuestion() {
         return this.questions[this.currentQuestionIndex];
@@ -681,10 +684,25 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Question", ()=>Question);
 class Question {
     constructor(data){
+        this.answered = false;
+        this.isLock = false;
         this.userAnswer = null;
+        this.time = 0;
         this.text = data.question;
         this.options = data.options;
         this.answer = data.answer;
+    }
+    getTime() {
+        return this.time;
+    }
+    setTime(timespend) {
+        this.time = timespend;
+    }
+    IsAnswered() {
+        return this.answered;
+    }
+    getIsLock() {
+        return this.isLock;
     }
     getText() {
         return this.text;
@@ -695,8 +713,12 @@ class Question {
     getUserAnswer() {
         return this.userAnswer;
     }
+    setIsLock() {
+        this.isLock = true;
+    }
     setUserAnswer(answer) {
         this.userAnswer = answer;
+        this.answered = true;
     }
     isCorrect() {
         return this.answer === this.userAnswer;
@@ -829,10 +851,21 @@ class StorageService {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Renderer", ()=>Renderer);
+// import { Timer } from "./Timer";
+var _myTimer = require("./MyTimer");
 class Renderer {
     constructor(){
+        this.result = "";
+        this.totalTime = 0;
         this.quizContainer = document.getElementById("app");
         this.introductionContainer = document.getElementById("introduction");
+        this.resultContainer = document.getElementById("output");
+        this.mytimer = new (0, _myTimer.MyTimer)(0);
+        this.timeDisplayElement = document.createElement("div");
+        this.timeDisplayElement.id = "timer-display";
+        this.resultDisplayElement = document.createElement("div");
+        this.resultDisplayElement.id = "result-display";
+        this.currentTime = 0;
     }
     renderIntroduction(quiz) {
         this.introductionContainer.innerHTML = `Przed tob\u{105} test wiedzy og\xf3lnej sk\u{142}adaj\u{105}cy sie z ${quiz.getQuestionCount()} pyta\u{144}. 
@@ -857,19 +890,44 @@ class Renderer {
       <button id="next">Next</button>
       <button id="submit" ${quiz.hasFinished() ? "" : "disabled"}>Submit</button>
       
+      
     `;
         this.setupOptionListeners(quiz);
         this.setupNavigationListeners(quiz);
-        this.quizContainer.insertAdjacentHTML("beforeend", '<div id="timer"></div>');
+        this.quizContainer.appendChild(this.timeDisplayElement);
         quiz.startQuiz();
+        this.startTimer();
+    }
+    startTimer() {
+        this.mytimer.startTimer();
+        setInterval(()=>{
+            this.currentTime = this.mytimer.getCurrentTime();
+            this.updateTimeDisplay();
+        }, 1000);
+    }
+    updateTimeDisplay() {
+        this.timeDisplayElement.textContent = `Czas: ${this.currentTime}s`;
     }
     renderOptions(question) {
+        if (question.getIsLock()) // Jeśli pytanie ma już odpowiedź, renderuje opcje jako zablokowane
         return question.getOptions().map((option, index)=>`
-      <label>
-        <input type="radio" name="option" value="${option}" ${question.getUserAnswer() === option ? "checked" : ""} />
-        ${option}
-      </label>
-    `).join("");
+            <label>
+                <input type="radio" name="option" value="${option}" 
+                ${question.getUserAnswer() === option ? "checked" : ""} 
+                disabled
+                />
+                ${option}
+            </label>
+        `).join("");
+        else // Jeśli pytanie nie ma jeszcze odpowiedzi, renderuje normalne opcje
+        return question.getOptions().map((option, index)=>`
+            <label>
+                <input type="radio" name="option" value="${option}" 
+                ${question.getUserAnswer() === option ? "checked" : ""} 
+                />
+                ${option}
+            </label>
+        `).join("");
     }
     setupOptionListeners(quiz) {
         const options = this.quizContainer.querySelectorAll('input[name="option"]');
@@ -886,14 +944,26 @@ class Renderer {
         const nextButton = this.quizContainer.querySelector("#next");
         const submitButton = this.quizContainer.querySelector("#submit");
         previousButton.onclick = ()=>{
+            if (quiz.getCurrentQuestion().IsAnswered()) quiz.getCurrentQuestion().setIsLock();
+            quiz.getCurrentQuestion().setTime(this.currentTime);
             quiz.previousQuestion();
             this.renderQuiz(quiz);
+            this.mytimer.stopTimer();
+            this.mytimer = new (0, _myTimer.MyTimer)(quiz.getCurrentQuestion().getTime());
+            this.startTimer();
         };
         nextButton.onclick = ()=>{
+            if (quiz.getCurrentQuestion().IsAnswered()) quiz.getCurrentQuestion().setIsLock();
+            quiz.getCurrentQuestion().setTime(this.currentTime);
             quiz.nextQuestion();
             this.renderQuiz(quiz);
+            this.mytimer.stopTimer();
+            this.mytimer = new (0, _myTimer.MyTimer)(quiz.getCurrentQuestion().getTime());
+            this.startTimer();
         };
         submitButton.onclick = ()=>{
+            quiz.getCurrentQuestion().setTime(this.currentTime);
+            this.mytimer.stopTimer();
             quiz.calculateScore();
             this.renderResults(quiz);
         };
@@ -903,19 +973,51 @@ class Renderer {
         submitButton.disabled = !quiz.hasFinished();
     }
     renderResults(quiz) {
+        for(let i = 0; i < quiz.getQuestionCount(); i++)this.result += " Pytanie nr." + (i + 1) + ": " + quiz.dawajToPytanie(i).getTime() + " sekund  " + `</br>`;
+        // this.resultDisplayElement.textContent = this.result;
+        this.resultContainer.innerHTML = this.result;
         this.quizContainer.innerHTML = `
       <div class="results">
         <h2>Results</h2>
         <p>Your score: ${quiz.getScore()} / ${quiz.getQuestionCount()}</p>
+        
+      
+
       </div>
     `;
+        this.quizContainer.appendChild(this.resultDisplayElement);
         quiz.endQuiz();
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./MyTimer":"6t5Nq"}],"6t5Nq":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "MyTimer", ()=>MyTimer);
+class MyTimer {
+    constructor(initialTime){
+        this.time = initialTime;
+        this.intervalId = null;
+    }
+    startTimer() {
+        this.intervalId = window.setInterval(()=>{
+            this.time += 1;
+        }, 1000);
+    }
+    getCurrentTime() {
+        return this.time;
+    }
+    stopTimer() {
+        if (this.intervalId !== null) {
+            window.clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
     }
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jhUEF":[function(require,module,exports) {
 "use strict";
 
-},{}]},["7ARAp","2iQTb"], "2iQTb", "parcelRequiref6ea")
+},{}]},["53Ztx","2iQTb"], "2iQTb", "parcelRequiref6ea")
 
 //# sourceMappingURL=index.d5b4114f.js.map
